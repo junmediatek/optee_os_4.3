@@ -5,40 +5,51 @@
 #include <stdio.h>
 #include <string.h>
 #include <tee_client_api.h>
-#include "hdcp_ca.h"
-#include "../../ta/hdcp/include/hdcp_ta.h"
+#include "../include/hdcp2_3_client.h"
 
-TEEC_Result hdcp_ca_init(TEEC_Context *context, TEEC_Session *session)
+TEEC_Result hdcp_ca_init(HDCP2_3_CLIENT_CTX *context)
 {
-    TEEC_UUID uuid = HDCP_TA_UUID;
+    TEEC_UUID uuid = TA_HDCP2_3_UUID;
     TEEC_Result res;
     uint32_t err_origin;
     
+    if (!context)
+        return TEEC_ERROR_BAD_PARAMETERS;
+        
     /* 初始化上下文 */
-    res = TEEC_InitializeContext(NULL, context);
+    res = TEEC_InitializeContext(NULL, &context->ctx);
     if (res != TEEC_SUCCESS) {
         printf("TEEC_InitializeContext failed: 0x%x\n", res);
         return res;
     }
     
     /* 打开会话 */
-    res = TEEC_OpenSession(context, session, &uuid, TEEC_LOGIN_PUBLIC,
+    res = TEEC_OpenSession(&context->ctx, &context->session, &uuid, TEEC_LOGIN_PUBLIC,
                           NULL, NULL, &err_origin);
     if (res != TEEC_SUCCESS) {
         printf("TEEC_OpenSession failed: 0x%x, origin: 0x%x\n", res, err_origin);
-        TEEC_FinalizeContext(context);
+        TEEC_FinalizeContext(&context->ctx);
+        return res;
     }
+    
+    context->is_initialized = true;
+    context->hdcp_status = 0; // HDCP_STATE_UNAUTHENTICATED
     
     return res;
 }
 
-void hdcp_ca_close(TEEC_Context *context, TEEC_Session *session)
+void hdcp_ca_close(HDCP2_3_CLIENT_CTX *context)
 {
+    if (!context || !context->is_initialized)
+        return;
+        
     /* 关闭会话 */
-    TEEC_CloseSession(session);
+    TEEC_CloseSession(&context->session);
     
     /* 清理上下文 */
-    TEEC_FinalizeContext(context);
+    TEEC_FinalizeContext(&context->ctx);
+    
+    context->is_initialized = false;
 }
 
 TEEC_Result hdcp_ca_ake_init(TEEC_Session *session, uint8_t *rtx, uint8_t *tx_caps)
@@ -63,7 +74,7 @@ TEEC_Result hdcp_ca_ake_init(TEEC_Session *session, uint8_t *rtx, uint8_t *tx_ca
     op.params[0].tmpref.size = sizeof(param);
     
     /* 调用TA */
-    res = TEEC_InvokeCommand(session, HDCP_CMD_AKE_INIT, &op, &err_origin);
+    res = TEEC_InvokeCommand(session, TA_HDCP2_3_CMD_AKE_INIT, &op, &err_origin);
     if (res != TEEC_SUCCESS) {
         printf("HDCP_CMD_AKE_INIT failed: 0x%x, origin: 0x%x\n", res, err_origin);
     }
@@ -94,7 +105,7 @@ TEEC_Result hdcp_ca_ake_send_cert(TEEC_Session *session, uint8_t *cert_rx, uint8
     op.params[0].tmpref.size = sizeof(param);
     
     /* 调用TA */
-    res = TEEC_InvokeCommand(session, HDCP_CMD_AKE_SEND_CERT, &op, &err_origin);
+    res = TEEC_InvokeCommand(session, TA_HDCP2_3_CMD_AKE_SEND_CERT, &op, &err_origin);
     if (res != TEEC_SUCCESS) {
         printf("HDCP_CMD_AKE_SEND_CERT failed: 0x%x, origin: 0x%x\n", res, err_origin);
     }
@@ -121,7 +132,7 @@ TEEC_Result hdcp_ca_decrypt_video(TEEC_Session *session,
     op.params[1].memref.parent = output_buffer;
     
     /* 调用TA */
-    res = TEEC_InvokeCommand(session, HDCP_CMD_DECRYPT_VIDEO, &op, &err_origin);
+    res = TEEC_InvokeCommand(session, TA_HDCP2_3_CMD_DECRYPT_VIDEO, &op, &err_origin);
     if (res != TEEC_SUCCESS) {
         printf("HDCP_CMD_DECRYPT_VIDEO failed: 0x%x, origin: 0x%x\n", res, err_origin);
     }
@@ -144,7 +155,7 @@ TEEC_Result hdcp_ca_test(TEEC_Session *session)
                     TEEC_NONE);
     
     /* 调用TA */
-    res = TEEC_InvokeCommand(session, HDCP_CMD_TEST, &op, &err_origin);
+    res = TEEC_InvokeCommand(session, TA_HDCP2_3_CMD_GET_STATUS, &op, &err_origin);
     if (res != TEEC_SUCCESS) {
         printf("HDCP_CMD_TEST failed: 0x%x, origin: 0x%x\n", res, err_origin);
     }

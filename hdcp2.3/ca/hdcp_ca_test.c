@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <tee_client_api.h>
-#include "include/hdcp_ca.h"
+#include "include/hdcp2_3_client.h"
 
 int main(void)
 {
@@ -16,17 +16,22 @@ int main(void)
     printf("HDCP 2.3 Sink CA Test\n");
     
     /* 初始化HDCP CA */
-    res = hdcp_ca_init(&context, &session);
+    HDCP2_3_CLIENT_CTX hdcp_ctx;
+    res = HDCP2_3_CLIENT_Init(&hdcp_ctx);
     if (res != TEEC_SUCCESS) {
         printf("Failed to initialize HDCP CA: 0x%x\n", res);
         return 1;
     }
     
+    context = hdcp_ctx.ctx;
+    session = hdcp_ctx.session;
+    
     /* 测试TA-CA通信 */
-    res = hdcp_ca_test(&session);
+    uint32_t status;
+    res = HDCP2_3_CLIENT_GetStatus(&hdcp_ctx, &status);
     if (res != TEEC_SUCCESS) {
         printf("HDCP CA test failed: 0x%x\n", res);
-        hdcp_ca_close(&context, &session);
+        HDCP2_3_CLIENT_Finalize(&hdcp_ctx);
         return 1;
     }
     
@@ -48,7 +53,7 @@ int main(void)
     res = TEEC_AllocateSharedMemory(&context, &in_shm);
     if (res != TEEC_SUCCESS) {
         printf("Failed to allocate input shared memory: 0x%x\n", res);
-        hdcp_ca_close(&context, &session);
+        HDCP2_3_CLIENT_Finalize(&hdcp_ctx);
         return 1;
     }
     
@@ -59,7 +64,7 @@ int main(void)
     if (res != TEEC_SUCCESS) {
         printf("Failed to allocate output shared memory: 0x%x\n", res);
         TEEC_ReleaseSharedMemory(&in_shm);
-        hdcp_ca_close(&context, &session);
+        HDCP2_3_CLIENT_Finalize(&hdcp_ctx);
         return 1;
     }
     
@@ -70,7 +75,7 @@ int main(void)
     uint8_t rtx[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
     uint8_t tx_caps[3] = {0x02, 0x00, 0x00};
     
-    res = hdcp_ca_ake_init(&session, rtx, tx_caps);
+    res = HDCP2_3_CLIENT_Authenticate(&hdcp_ctx);
     if (res != TEEC_SUCCESS) {
         printf("AKE Init failed: 0x%x\n", res);
     } else {
@@ -80,7 +85,7 @@ int main(void)
     /* 清理资源 */
     TEEC_ReleaseSharedMemory(&in_shm);
     TEEC_ReleaseSharedMemory(&out_shm);
-    hdcp_ca_close(&context, &session);
+    HDCP2_3_CLIENT_Finalize(&hdcp_ctx);
     
     printf("HDCP CA Test completed\n");
     
