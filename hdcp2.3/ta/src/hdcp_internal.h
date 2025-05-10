@@ -69,4 +69,15 @@ TEE_Result hdcp_verify_l_prime(struct hdcp_session *session, uint8_t *l_prime);
 TEE_Result hdcp_process_stored_km(struct hdcp_session *session, uint8_t *e_kh_km, uint8_t *m);
 TEE_Result hdcp_process_no_stored_km(struct hdcp_session *session, uint8_t *e_kpub_km);
 
+/* HDCP命令处理函数 */
+TEE_Result hdcp_ake_no_stored_km(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_ake_stored_km(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_ake_send_rrx(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_ake_send_h_prime(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_ake_send_pairing_info(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_lc_init(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_lc_send_l_prime(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_ske_send_eks(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+TEE_Result hdcp_decrypt_init(struct hdcp_session *session, uint32_t param_types, TEE_Param params[4]);
+
 #endif /* HDCP_INTERNAL_H */
