@@ -36,6 +36,12 @@ To test the implementation:
 ./ca/hdcp/hdcp_ca_test
 ```
 
+To run fuzzing tests on the TA:
+
+```
+./tests/hdcp_ta_fuzz_test
+```
+
 ## Features
 
 - Complete HDCP 2.3 protocol implementation for WiFi-Display sink
