@@ -10,7 +10,8 @@ OBJCOPY ?= $(CROSS_COMPILE)objcopy
 OBJDUMP ?= $(CROSS_COMPILE)objdump
 READELF ?= $(CROSS_COMPILE)readelf
 
-CFLAGS += -Wall -I../../ta/hdcp/include
+CFLAGS += -Wall -I../ta/include
+CFLAGS += -I./include
 CFLAGS += -I$(TEEC_EXPORT)/include
 
 LDADD += -lteec -L$(TEEC_EXPORT)/lib
@@ -20,7 +21,10 @@ BINARY = hdcp_ca_test
 .PHONY: all
 all: $(BINARY)
 
-$(BINARY): hdcp_ca_test.o hdcp_ca.o
+HDCP_SRCS = src/hdcp_ca.c hdcp_ca_test.c
+HDCP_OBJS = $(HDCP_SRCS:.c=.o)
+
+$(BINARY): $(HDCP_OBJS)
 	$(CC) -o $@ $^ $(LDADD)
 
 .PHONY: clean
