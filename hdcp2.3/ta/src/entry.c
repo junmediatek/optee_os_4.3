@@ -218,32 +218,23 @@ TEE_Result TA_InvokeCommandEntryPoint(void *sess_ctx,
     case HDCP_CMD_AKE_SEND_CERT:
         return hdcp_ake_send_cert(session, param_types, params);
     case HDCP_CMD_AKE_NO_STORED_KM:
-        /* return hdcp_ake_no_stored_km(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ake_no_stored_km(session, param_types, params);
     case HDCP_CMD_AKE_STORED_KM:
-        /* return hdcp_ake_stored_km(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ake_stored_km(session, param_types, params);
     case HDCP_CMD_AKE_SEND_RRX:
-        /* return hdcp_ake_send_rrx(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ake_send_rrx(session, param_types, params);
     case HDCP_CMD_AKE_SEND_H_PRIME:
-        /* return hdcp_ake_send_h_prime(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ake_send_h_prime(session, param_types, params);
     case HDCP_CMD_AKE_SEND_PAIRING_INFO:
-        /* return hdcp_ake_send_pairing_info(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ake_send_pairing_info(session, param_types, params);
     case HDCP_CMD_LC_INIT:
-        /* return hdcp_lc_init(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_lc_init(session, param_types, params);
     case HDCP_CMD_LC_SEND_L_PRIME:
-        /* return hdcp_lc_send_l_prime(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_lc_send_l_prime(session, param_types, params);
     case HDCP_CMD_SKE_SEND_EKS:
-        /* return hdcp_ske_send_eks(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_ske_send_eks(session, param_types, params);
     case HDCP_CMD_DECRYPT_INIT:
-        /* return hdcp_decrypt_init(session, param_types, params); */
-        return TEE_ERROR_NOT_IMPLEMENTED;
+        return hdcp_decrypt_init(session, param_types, params);
     case HDCP_CMD_DECRYPT_VIDEO:
         return hdcp_decrypt_video(session, param_types, params);
     case HDCP_CMD_TEST:
