@@ -5,10 +5,10 @@
 # 全局变量
 OPTEE_OS_DIR ?= $(shell cd .. && pwd)
 
-# 编译TA和CA
-.PHONY: all ta ca clean
+# 编译TA、CA和测试
+.PHONY: all ta ca tests clean
 
-all: ta ca
+all: ta ca tests
 
 ta:
 	$(MAKE) -C ta/hdcp OPTEE_OS_DIR=$(OPTEE_OS_DIR)
@@ -16,6 +16,10 @@ ta:
 ca:
 	$(MAKE) -C ca/hdcp
 
+tests:
+	$(MAKE) -C tests
+
 clean:
 	$(MAKE) -C ta/hdcp clean
 	$(MAKE) -C ca/hdcp clean
+	$(MAKE) -C tests clean
