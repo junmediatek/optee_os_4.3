@@ -11,15 +11,15 @@ OPTEE_OS_DIR ?= $(shell cd .. && pwd)
 all: ta ca tests
 
 ta:
-	$(MAKE) -C ta/hdcp OPTEE_OS_DIR=$(OPTEE_OS_DIR)
+	$(MAKE) -C ta OPTEE_OS_DIR=$(OPTEE_OS_DIR)
 
 ca:
-	$(MAKE) -C ca/hdcp
+	$(MAKE) -C ca
 
 tests:
 	$(MAKE) -C tests
 
 clean:
-	$(MAKE) -C ta/hdcp clean
-	$(MAKE) -C ca/hdcp clean
+	$(MAKE) -C ta clean
+	$(MAKE) -C ca clean
 	$(MAKE) -C tests clean
