@@ -313,3 +313,7 @@ _CFG_CORE_LTC_EC25519 := $(call ltc-one-enabled, ED25519 X25519)
 ifeq ($(CFG_CRYPTOLIB_NAME),tomcrypt)
 CFG_CRYPTO_RSASSA_NA1 ?= y
 endif
+
+# Use full hash size for AAD in fs_htree.c authenc_init
+# When disabled, uses the legacy behavior with truncated hash
+CFG_CRYPTO_FULL_HASH_AAD ?= y
