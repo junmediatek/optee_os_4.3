@@ -473,8 +473,13 @@ static TEE_Result authenc_init(void **ctx_ret, TEE_OperationMode mode,
 		goto err_free;
 
 	if (!ni) {
+#if defined(CFG_CRYPTO_FULL_HASH_AAD)
 		res = crypto_authenc_update_aad(ctx, mode, ht->root.node.hash,
 						TEE_FS_HTREE_HASH_SIZE);
+#else
+		res = crypto_authenc_update_aad(ctx, mode, ht->root.node.hash,
+						TEE_FS_HTREE_FEK_SIZE);
+#endif
 		if (res != TEE_SUCCESS)
 			goto err;
 
